@@ -1,9 +1,10 @@
 package com.pudingyum.opcomic.service;
 
-import com.pudingyum.opcomic.domain.Chapter;
-import com.pudingyum.opcomic.domain.ChapterImage;
+import com.pudingyum.opcomic.domain.dao.Chapter;
+import com.pudingyum.opcomic.domain.dao.ChapterImage;
 import com.pudingyum.opcomic.repository.ChapterImageRepository;
 import com.pudingyum.opcomic.repository.ChapterRepository;
+import com.pudingyum.opcomic.utils.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,16 +35,14 @@ public class ChapterService {
     @Value("${op-source-url}")
     String opSourceUrl;
 
-    public ResponseEntity<Object> addOneChapter(Chapter chapter) throws IOException {
+    public ResponseEntity<Object> addOneChapter(Long chapterNumber) throws IOException {
         try{
-
-            Document doc = Jsoup.connect(opSourceUrl+chapter.getChapterNumber()).get();
+            log.info(opSourceUrl+chapterNumber);
+            Document doc = Jsoup.connect(opSourceUrl+chapterNumber+"/").get();
             Elements chapterImages = doc.select(".entry-content img");
 
-            Chapter chapter1 = Chapter.builder().chapterNumber(chapter.getChapterNumber()).chapterImages(new ArrayList<>()).build();
+            Chapter chapter1 = Chapter.builder().chapterNumber(chapterNumber).chapterImages(new ArrayList<>()).build();
             chapterRepository.save(chapter1);
-
-            List<ChapterImage> listChapterImages = new ArrayList<>();
 
             for(Element image:chapterImages){
                 Pattern pattern = Pattern.compile("\\d+$");
@@ -56,13 +56,38 @@ public class ChapterService {
                 chapter1.getChapterImages().add(chapterImage);
             }
 
-            ResponseEntity<Object> responseEntity = new ResponseEntity<>(chapter1, HttpStatusCode.valueOf(201));
-            return responseEntity;
+            return Response.build("Add one chapter success", chapter1, null, HttpStatusCode.valueOf(201));
         }catch (IOException e){
             log.error(e.toString());
 
-            ResponseEntity<Object> responseEntity = new ResponseEntity<>(HttpStatusCode.valueOf(500));
-            return responseEntity;
+            return Response.build("Internal server error!", null, null, HttpStatusCode.valueOf(500));
+        }
+    }
+
+    public ResponseEntity<Object> getOneChapter(Long chapterNumber) {
+        try{
+            Optional<Chapter> chapter1 = chapterRepository.findByChapterNumber(chapterNumber);
+            if(chapter1.isEmpty()){
+                return Response.build("Chapter not found", null, null, HttpStatusCode.valueOf(400));
+            }
+
+            return Response.build("Get one chapter success", chapter1, null, HttpStatusCode.valueOf(200));
+        }catch (Exception e){
+            log.error(e.toString());
+
+            return Response.build("Internal server error!", null, null, HttpStatusCode.valueOf(500));
+        }
+    }
+
+    public ResponseEntity<Object> getChapterList(){
+        try{
+            List<Chapter> chapters = chapterRepository.findAll();
+
+            return Response.build("Get all chapter success", chapters, null, HttpStatusCode.valueOf(200));
+        }catch (Exception e){
+            log.error(e.toString());
+
+            return Response.build("Internal server error!", null, null, HttpStatusCode.valueOf(500));
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.pudingyum.opcomic.domain;
+package com.pudingyum.opcomic.domain.dao;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;

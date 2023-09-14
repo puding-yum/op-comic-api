@@ -1,4 +1,4 @@
-package com.pudingyum.opcomic.domain;
+package com.pudingyum.opcomic.domain.dao;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -21,9 +21,10 @@ public class Chapter {
 
     @Column(name = "chapter_number")
     @JsonProperty(value = "chapter_number")
-    private Integer chapterNumber;
+    private Long chapterNumber;
 
     @JsonManagedReference
     @OneToMany(mappedBy="chapter", fetch = FetchType.LAZY)
+    @JsonProperty(value = "chapter_images")
     private List<ChapterImage> chapterImages;
 }

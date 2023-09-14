@@ -1,6 +1,6 @@
 package com.pudingyum.opcomic.controller;
 
-import com.pudingyum.opcomic.domain.Chapter;
+import com.pudingyum.opcomic.domain.dao.Chapter;
 import com.pudingyum.opcomic.service.ChapterService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,18 @@ public class ChapterController {
     @Autowired
     ChapterService chapterService;
 
-    @PostMapping(value = "/add-one")
-    public ResponseEntity<Object> addOneChapter(@RequestBody Chapter chapter) throws IOException {
-        return chapterService.addOneChapter(chapter);
+    @PostMapping(value = "/{chapterNumber}")
+    public ResponseEntity<Object> addOneChapter(@PathVariable Long chapterNumber) throws IOException {
+        return chapterService.addOneChapter(chapterNumber);
+    }
+
+    @GetMapping(value = "/{chapterNumber}")
+    public ResponseEntity<Object> getOneChapter(@PathVariable Long chapterNumber) throws IOException {
+        return chapterService.getOneChapter(chapterNumber);
+    }
+
+    @GetMapping(value = "")
+    public ResponseEntity<Object> getAllChapter() throws IOException {
+        return chapterService.getChapterList();
     }
 }
