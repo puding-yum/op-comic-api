@@ -5,6 +5,7 @@ import com.pudingyum.opcomic.service.ChapterService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ public class ChapterController {
     @Autowired
     ChapterService chapterService;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(value = "/{chapterNumber}")
     public ResponseEntity<Object> addOneChapter(@PathVariable Long chapterNumber) throws IOException {
         return chapterService.addOneChapter(chapterNumber);

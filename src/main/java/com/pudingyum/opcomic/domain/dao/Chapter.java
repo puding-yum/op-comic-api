@@ -20,11 +20,9 @@ public class Chapter {
     Long id;
 
     @Column(name = "chapter_number")
-    @JsonProperty(value = "chapter_number")
     private Long chapterNumber;
 
     @JsonManagedReference
     @OneToMany(mappedBy="chapter", fetch = FetchType.LAZY)
-    @JsonProperty(value = "chapter_images")
     private List<ChapterImage> chapterImages;
 }

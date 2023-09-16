@@ -3,6 +3,8 @@ package com.pudingyum.opcomic.domain.dao;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,11 +21,12 @@ public class ChapterImage {
     @Column
     private String url;
 
-    @Column
-    private Integer page;
+    @Column(name = "page_number")
+    private Integer pageNumber;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "chapter_id")
     private Chapter chapter;
 }
